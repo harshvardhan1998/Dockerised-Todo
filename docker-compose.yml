@@ -5,10 +5,12 @@ services:
     restart: always
     build: ./TodoProject
     expose:
-     - "8000"
+      - "8000"
     links:
       - pg:pg
       - redis:redis
+    volumes:
+      - todo-vol:/app
 
   pg:
     restart: always
@@ -20,6 +22,7 @@ services:
     volumes_from:
       - data-container
 
+
   nginx:
     restart: always
     image: harshvardhan03/todo-nginx:v1
@@ -27,18 +30,26 @@ services:
       - "80:80"
     links:
       - todo:todo
-
+    volumes:
+      - nginx:/etc/nginx
   redis:
     restart: always
     image: redis:5
     ports:
       - "6379:6379"
+    volumes:
+      - redis
   
   data-container:
     restart: always
     image: alpine
     volumes:
-      - /var/lib/postgresql/data/
+      - data-container:/var/lib/postgresql/data/
     command: "true" 
-
+ 
+volumes:
+  data-container:
+  redis:
+  todo-vol:
+  nginx:
 
